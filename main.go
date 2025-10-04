@@ -6,7 +6,7 @@ import (
 	"net"
 	"rocketmq-gateway/mq"
 	mqproto "rocketmq-gateway/proto"
-	"rocketmq-gateway/rpc"
+	"rocketmq-gateway/service"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 		log.Fatalf("监听失败: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	mqproto.RegisterRocketMQGatewayServer(grpcServer, &rpc.RocketMQGatewayServerImpl{})
+	mqproto.RegisterRocketMQGatewayServer(grpcServer, &service.RocketMQGatewayServerImpl{})
 	log.Println("🚀 gRPC 服务已启动，监听端口 50051")
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("启动 gRPC 服务失败: %v", err)

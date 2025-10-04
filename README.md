@@ -1,8 +1,11 @@
 # RocketMQ Gateway Python客户端使用指南
 
 ## 概述
-
-这个项目提供了一个gRPC网关，让Python客户端可以通过gRPC接口与RocketMQ进行交互，包括发送消息和订阅消息。
+Apache RocketMQ 官方在 Windows 平台 并未提供 Python SDK，导致 Python 客户端无法直接与 RocketMQ 交互。
+为解决这一限制，本项目实现了一个 gRPC 网关 (RocketMQ Gateway)：
+- 网关由 Go 语言编写，负责与 RocketMQ 原生客户端交互；
+- Python 客户端通过 gRPC 接口即可方便地 发送消息 与 订阅消息；
+- 屏蔽了底层 RocketMQ SDK 的依赖，让 Python 应用在 Windows / Linux 等平台都能无差别使用。
 
 ## 功能特性
 
@@ -15,19 +18,35 @@
 
 ```
 rocketmq-gateway/
-├── main.go                 # Go服务主程序
-├── config.yaml            # 配置文件
-├── proto/                 # Protocol Buffers定义
+├── config
+│   └── config.go
+├── config.yaml
+├── proto                # proto 定义及生成代码
 │   ├── mq.proto
 │   ├── mq.pb.go
 │   └── mq_grpc.pb.go
-├── rpc/                   # gRPC服务实现
-│   ├── producerService.go # 生产者和订阅服务
-│   └── consumerService.go # 消费者服务（备用）
-├── mq/                    # RocketMQ客户端封装
-├── config/                # 配置管理
-├── test_python_client.py  # Python测试客户端
-└── generate_python_grpc.py # 生成Python gRPC代码
+├── mq                   # MQ 封装层
+│   ├── consumer.go
+│   └── producer.go
+├── rpc              # gRPC 服务实现
+│   └── service.go
+├── python_cline         # Python gRPC 客户端 & demo
+│   ├── README.md
+│   ├── generate_python_grpc.py
+│   ├── mq.proto
+│   ├── mq_pb2.py
+│   ├── mq_pb2_grpc.py
+│   ├── test_consumer.py
+│   ├── test_producer.py
+│   └── test_python_client.py
+├── test                  # 测试
+│   ├── consumer_test.go
+|   ├── producer_test.go
+|   └── service_test.go
+├── main.go              # 入口
+├── go.mod
+├── go.sum
+└── README.md
 ```
 
 ## 快速开始
@@ -37,7 +56,7 @@ rocketmq-gateway/
 ```bash
 # 确保RocketMQ正在运行
 # 修改config.yaml中的nameservers配置
-
+go mod tidy
 # 启动服务
 go run main.go
 ```
