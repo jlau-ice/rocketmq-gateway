@@ -11,23 +11,9 @@ import (
 	"testing"
 )
 
-// 消费者的消息处理函数
-func ConsumeMessages(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
-	for _, msg := range msgs {
-		fmt.Printf("=============================================\n")
-		fmt.Printf("消费消息成功！\n")
-		fmt.Printf("Topic: %s, MsgID: %s, Tag: %s\n", msg.Topic, msg.MsgId, msg.GetTags())
-		fmt.Printf("消息体: %s\n", string(msg.Body))
-		fmt.Printf("=============================================\n")
-	}
-
-	// 返回 ConsumeSuccess 表示消息处理成功
-	return consumer.ConsumeSuccess, nil
-}
-
 func TestConsumer(t *testing.T) {
 	// 1. 加载配置
-	cfg := config.LoadConfig("config/config.yaml")
+	cfg := config.LoadConfig("../config.yaml")
 	nameservers := cfg.RocketMQ.Nameservers
 	groupName := cfg.RocketMQ.Producer.GroupName
 
@@ -61,7 +47,6 @@ func TestConsumer(t *testing.T) {
 		log.Fatalf("启动消费者失败: %v", err)
 	}
 	log.Println("消费者已启动，持续监听消息...")
-
 	// 5. 阻塞主线程，保持消费者运行
 	select {} // 无限阻塞，直到手动终止
 }
